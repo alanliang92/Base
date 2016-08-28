@@ -1,5 +1,5 @@
-#ifndef __BASE_LOG_H__
-#define __BASE_LOG_H__
+#ifndef __BASE_LOG_BASE_H__
+#define __BASE_LOG_BASE_H__
 
 #include<sys/stat.h>
 #include<fcntl.h>
@@ -10,23 +10,21 @@
 namespace Common
 {
 
-//日志组件
+//鏃ュ織鍩烘湰缁勪欢
 class LogBase
 {
     public:
         LogBase();
 
-        LogBase(const char *strLogName,
-            const uint32_t dwLogLevel);
+        void SetLogName(const char *strLogName);
 
-        LogBase(const std::string &strLogName,
-            const uint32_t dwLogLevel);
+        void SetLogName(const std::string &strLogName);
 
         int OpenLogFile();
 
-        int WriteLog(const std::string &strLog);
-
         int WriteLog(const char *strLog);
+
+        int WriteLog(const std::string &strLog);
 
         ~LogBase();
 

@@ -1,4 +1,4 @@
-#include<time.h>
+#include <time.h>
 #include "log_base.h"
 #include "string.h"
 #include <sstream>
@@ -8,38 +8,24 @@ using namespace Common;
 
 LogBase::LogBase()
 {
-    time_t dwTimeStamp = time(NULL);
-    struct tm tmNowTime = *(localtime(&dwTimeStamp));
-
-    std::stringstream ossLogName;
-
-    uint32_t dwFromatTime = 0;
-    dwFromatTime = (tmNowTime.tm_year + 1900) * 1000000;
-    dwFromatTime = dwFromatTime + (tmNowTime.tm_mon + 1) * 10000;
-    dwFromatTime = dwFromatTime + tmNowTime.tm_mday * 100;
-    dwFromatTime = dwFromatTime + tmNowTime.tm_hour;
-
-    ossLogName << dwFromatTime << ".log"; 
-
-    m_strLogName = ossLogName.str();
-    
-}
-
-LogBase::LogBase(const char *strLogName,
-         const uint32_t dwLogLevel)
-{
-    m_strLogName = (std::string)(strLogName);
-}
-
-LogBase::LogBase(const std::string &strLogName,
-         const uint32_t dwLogLevel)
-{
-    m_strLogName = strLogName;
+    m_strLogName = "";
+    m_dwLogLevel = 0;
+    m_iLogFd = -1;
 }
 
 LogBase::~LogBase()
 {
     close(m_iLogFd);
+}
+
+void LogBase::SetLogName(const char *strLogName)
+{
+    m_strLogName = (std::string)(strLogName);
+}
+
+void LogBase::SetLogName(const std::string &strLogName)
+{
+    m_strLogName = strLogName;
 }
 
 int LogBase::OpenLogFile()
@@ -55,11 +41,6 @@ int LogBase::OpenLogFile()
     return 0;
 }
 
-int LogBase::WriteLog(const std::string &strLog)
-{
-    return WriteLog(strLog.c_str());
-}
-
 int LogBase::WriteLog(const char *strLog)
 {
     size_t iRet = write(m_iLogFd, strLog, strlen(strLog));
@@ -70,4 +51,9 @@ int LogBase::WriteLog(const char *strLog)
     }
     
     return 0;
+}
+
+int LogBase::WriteLog(const std::string &strLog)
+{
+    return WriteLog(strLog.c_str());
 }
