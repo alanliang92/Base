@@ -1,0 +1,13 @@
+cc_library(
+    name='log',
+    srcs=[
+        'log_base.cpp',
+        'log.cpp',
+    ],
+    deps=[
+        '//base/comm/string:string_utils',
+    ],
+    incs=[
+        '/home/lancelot/code/base/comm/string',
+    ],
+)
