@@ -6,10 +6,12 @@
 
 using namespace Common;
 
+#define LOG_PATH "/home/lancelot/log/"
+
 LogBase::LogBase()
 {
     m_strLogName = "";
-    m_dwLogLevel = 0;
+    m_dwLogLevel = LOG_INFO | LOG_DEBUG | LOG_ERROR | LOG_KEY;
     m_iLogFd = -1;
 }
 
@@ -28,11 +30,22 @@ void LogBase::SetLogName(const std::string &strLogName)
     m_strLogName = strLogName;
 }
 
+void LogBase::SetLogLevel(const uint32_t dwLogLevel)
+{
+    m_dwLogLevel = dwLogLevel;
+}
+
+uint32_t LogBase::GetLogLevel() const
+{
+    return m_dwLogLevel;
+}
+
 int LogBase::OpenLogFile()
 {
-    int iFileFlag = O_WRONLY|O_CREAT|O_APPEND;
+    int iFileFlag = O_WRONLY | O_CREAT | O_APPEND;
     int iFileMode = S_IRUSR | S_IWUSR | S_IXUSR | S_IRGRP | S_IWGRP | S_IXGRP | S_IROTH | S_IWOTH | S_IXOTH;
-    m_iLogFd = open(m_strLogName.c_str(), iFileFlag, iFileMode);
+    std::string strLogFilePath = LOG_PATH + m_strLogName;
+    m_iLogFd = open(strLogFilePath.c_str(), iFileFlag, iFileMode);
     if(m_iLogFd == -1)
     {
         return -1;
@@ -43,7 +56,7 @@ int LogBase::OpenLogFile()
 
 int LogBase::WriteLog(const char *strLog)
 {
-    size_t iRet = write(m_iLogFd, strLog, strlen(strLog));
+    ssize_t iRet = write(m_iLogFd, strLog, strlen(strLog));
     
     if(iRet == -1)
     {

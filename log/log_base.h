@@ -1,11 +1,20 @@
 #ifndef __BASE_LOG_BASE_H__
 #define __BASE_LOG_BASE_H__
 
-#include<sys/stat.h>
-#include<fcntl.h>
-#include<unistd.h>
-#include<ctype.h>
-#include<string>
+#include <stdint.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <ctype.h>
+#include <string>
+
+enum LOG_LEVEL
+{
+    LOG_INFO = 1,
+    LOG_DEBUG = 1 << 1,
+    LOG_ERROR = 1 << 2,
+    LOG_KEY = 1 << 3
+};
 
 namespace Common
 {
@@ -16,17 +25,21 @@ class LogBase
     public:
         LogBase();
 
+        ~LogBase();
+
         void SetLogName(const char *strLogName);
 
         void SetLogName(const std::string &strLogName);
+
+        void SetLogLevel(const uint32_t dwLogLevel);
+
+        uint32_t GetLogLevel() const;
 
         int OpenLogFile();
 
         int WriteLog(const char *strLog);
 
         int WriteLog(const std::string &strLog);
-
-        ~LogBase();
 
     private:
 
