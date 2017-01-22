@@ -3,6 +3,7 @@ cc_library(
     srcs=[
         'log_base.cpp',
         'log.cpp',
+        'log_interface.cpp',
     ],
     deps=[
         '//base/comm/string:string_utils',

@@ -31,10 +31,6 @@ class LogBase
 
         void SetLogName(const std::string &strLogName);
 
-        void SetLogLevel(const uint32_t dwLogLevel);
-
-        uint32_t GetLogLevel() const;
-
         int OpenLogFile();
 
         int WriteLog(const char *strLog);

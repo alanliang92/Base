@@ -9,93 +9,19 @@
 
 using namespace Common;
 
-#define MAX_BUFFER 100 
-
-//TODO 继续抽象函数
-
-namespace Common
+Log::Log()
 {
-
-LogBase m_objLogBase;
-
-//获取可执行程序的名
-std::string GetExecuteName(const pid_t pid)
-{
-    char pidPath[128];
-    char executeName[1024];
-    snprintf(pidPath, 128, "/proc/%d/cmdline", pid);
-
-    int executeCmdLineFd = open(pidPath, O_RDONLY);
-
-    if(executeCmdLineFd == -1)
-    {
-        return "Open ProcFile Error";
-    }
-
-    ssize_t iRet = read(executeCmdLineFd, executeName, 1024);
-    if(iRet == -1)
-    {
-        return "Read ProcFile Error";
-    }
-
-    std::string strExecuteName = std::string(executeName);
-    std::vector<std::string> vecResult;
-    StringUtils::SplitBySeparator(strExecuteName, '/', vecResult);
-
-    close(executeCmdLineFd);
-
-    return vecResult[vecResult.size()-1];
+    m_dwLogLevel = 0;
+    m_strLogName = "";
 }
 
-std::string MakeExtendContent()
+Log::~Log()
 {
-    std::stringstream oss;
 
-    pid_t pid = getpid();    
-
-    time_t dwTimeStamp = time(NULL); 
-    struct tm* tmNowTime = localtime(&dwTimeStamp);
-    char formatTimeBuffer[128];
-    strftime(formatTimeBuffer, 128, "%F %T", tmNowTime);
-
-    oss << "[" << formatTimeBuffer << "]";
-    oss << "|" << GetExecuteName(pid);
-    oss << "|" << pid; 
-    oss << "|";
-
-    return oss.str();
 }
 
-std::string MakeExtendContent(const std::string &strFullFileName,
-        const std::string &strFunction,
-        const uint32_t dwLineNo)
+void Log::InitLog(const uint32_t dwLogLevel)
 {
-    std::stringstream oss;
-
-    pid_t pid = getpid();    
-
-    time_t dwTimeStamp = time(NULL); 
-    struct tm* tmNowTime = localtime(&dwTimeStamp);
-    char formatTimeBuffer[128];
-    strftime(formatTimeBuffer, 128, "%F %T", tmNowTime);
-
-    std::vector<std::string> vecFileName;
-    StringUtils::SplitBySeparator(strFullFileName, '/', vecFileName);
-    std::string strFileName = vecFileName[vecFileName.size()-1];
-
-    oss << "[" << formatTimeBuffer << "]";
-    oss << "|" << GetExecuteName(pid);
-    oss << "|" << pid; 
-    oss << "|" << strFileName << ":" << dwLineNo;
-    oss << "|" << strFunction;
-    oss << "|";
-
-    return oss.str();
-}
-
-int InitLog(const uint32_t dwLogLevel)
-{
-    int iRet = 0; 
     time_t dwTimeStamp = time(NULL);
     struct tm tmNowTime = *(localtime(&dwTimeStamp));
 
@@ -107,68 +33,98 @@ int InitLog(const uint32_t dwLogLevel)
     dwFromatTime = dwFromatTime + tmNowTime.tm_mday * 100;
     dwFromatTime = dwFromatTime + tmNowTime.tm_hour;
 
-    ossLogName << dwFromatTime << ".log"; 
+    ossLogName << dwFromatTime; 
     
-    std::string strLogName = ossLogName.str();
+    m_strLogName = ossLogName.str();
+    m_dwLogLevel = dwLogLevel;
 
-    m_objLogBase.SetLogName(strLogName);
-    m_objLogBase.SetLogLevel(dwLogLevel);
-    iRet = m_objLogBase.OpenLogFile();
-    return iRet;
+    InitLogBase();
 }
 
-int InitLog(const std::string &strLogName, const uint32_t dwLogLevel)
+void Log::InitLog(const std::string &strLogName,
+         const uint32_t dwLogLevel)
 {
-    int iRet = 0;
-    m_objLogBase.SetLogName(strLogName);
-    m_objLogBase.SetLogLevel(dwLogLevel);
-    iRet = m_objLogBase.OpenLogFile();
-    return iRet;
-}
-
-void ExtLogInfo(const std::string &strFullFileName, 
-        const std::string &strFunction,
-        const uint32_t dwLineNo,
-        const char * strFormat, 
-        ...)
-{
-    if((m_objLogBase.GetLogLevel() & LOG_INFO) != LOG_INFO)
+    size_t dwIndex = m_strLogName.find_last_of(".log");
+    if(dwIndex != std::string::npos)
     {
-        return ;
+        m_strLogName = m_strLogName.substr(0, dwIndex);
     }
     else
     {
-        std::string strExtendContent = MakeExtendContent(strFullFileName, strFunction, dwLineNo);
-
-        char logBuffer[MAX_BUFFER];
-        va_list args;
-        va_start(args, strFormat);
-        vsnprintf(logBuffer, MAX_BUFFER, strFormat, args);
-        logBuffer[strlen(logBuffer)] = '\n';
-        std::string strLog = strExtendContent + std::string(logBuffer);
-        m_objLogBase.WriteLog(strLog.c_str());
-        va_end(args);
+        m_strLogName = strLogName;
     }
+
+    m_dwLogLevel = dwLogLevel;
+
+    InitLogBase();
 }
 
-void LogInfo(const char * strFormat, ...)
+void Log::InitLogBase()
 {
-    if((m_objLogBase.GetLogLevel() & LOG_INFO) != LOG_INFO)
-    {
-        return ;
-    }
-    else
-    {
-        std::string strExtendContent = MakeExtendContent();
+    InitDebugLog();
 
-        char logBuffer[MAX_BUFFER];
-        va_list args;
-        va_start(args, strFormat);
-        vsnprintf(logBuffer, MAX_BUFFER, strFormat, args);
-        logBuffer[strlen(logBuffer)] = '\n';
-        std::string strLog = strExtendContent + std::string(logBuffer);
-        m_objLogBase.WriteLog(strLog.c_str());
-        va_end(args);
+    InitErrorLog();
+
+    InitKeyLog();
+}
+
+void Log::InitDebugLog()
+{
+    std::string strDebugLogName = m_strLogName + "_debug.log";
+    m_oLogDebug.SetLogName(strDebugLogName);
+    uint32_t iRet = m_oLogDebug.OpenLogFile();
+
+    if(iRet != 0)
+    {
+        printf("DebugLog[%s] open fail", strDebugLogName.c_str());
     }
 }
+
+void Log::InitErrorLog()
+{
+    std::string strErrorLogName = m_strLogName + "_error.log";
+    m_oLogError.SetLogName(strErrorLogName);
+    uint32_t iRet = m_oLogError.OpenLogFile();
+
+    if(iRet != 0)
+    {
+        printf("ErrorLog[%s] open fail", strErrorLogName.c_str());
+    }
 }
+
+void Log::InitKeyLog()
+{
+    std::string strKeyLogName = m_strLogName + "_key.log";
+    m_oLogKey.SetLogName(strKeyLogName);
+    uint32_t iRet = m_oLogKey.OpenLogFile();
+
+    if(iRet != 0)
+    {
+        printf("KeyLog[%s] open fail", strKeyLogName.c_str());
+    }
+}
+
+void Log::MarkDebugLog(const std::string &strLogContent)
+{
+    if((m_dwLogLevel & LOG_DEBUG) == LOG_DEBUG)
+    {
+        m_oLogDebug.WriteLog(strLogContent);
+    }
+}
+
+void Log::MarkErrorLog(const std::string &strLogContent)
+{
+    if((m_dwLogLevel & LOG_ERROR) == LOG_ERROR)
+    {
+        m_oLogError.WriteLog(strLogContent);
+    }
+}
+
+void Log::MarkKeyLog(const std::string &strLogContent)
+{
+    if((m_dwLogLevel & LOG_KEY) == LOG_KEY)
+    {
+        m_oLogKey.WriteLog(strLogContent);
+    }
+}
+

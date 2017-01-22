@@ -11,7 +11,6 @@ using namespace Common;
 LogBase::LogBase()
 {
     m_strLogName = "";
-    m_dwLogLevel = LOG_INFO | LOG_DEBUG | LOG_ERROR | LOG_KEY;
     m_iLogFd = -1;
 }
 
@@ -28,16 +27,6 @@ void LogBase::SetLogName(const char *strLogName)
 void LogBase::SetLogName(const std::string &strLogName)
 {
     m_strLogName = strLogName;
-}
-
-void LogBase::SetLogLevel(const uint32_t dwLogLevel)
-{
-    m_dwLogLevel = dwLogLevel;
-}
-
-uint32_t LogBase::GetLogLevel() const
-{
-    return m_dwLogLevel;
 }
 
 int LogBase::OpenLogFile()
@@ -62,7 +51,7 @@ int LogBase::WriteLog(const char *strLog)
     {
         return -1;
     }
-    
+
     return 0;
 }
 

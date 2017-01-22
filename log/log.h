@@ -6,30 +6,45 @@
 #include "string_utils.h"
 #include "log_base.h"
 
-#define LOG_INFO(format, args...) \
-{\ 
-    std::string strFullFileName = __FILE__; \
-    std::string strFunction = __FUNCTION__; \
-    uint32_t dwLineNo = __LINE__; \
-    ExtLogInfo(strFullFileName, strFunction, dwLineNo, format, args); \
-}
-
 namespace Common
 {
 
-int InitLog(const uint32_t dwLogLevel = 15);
+class Log
+{
+    public:
+        Log();
+        ~Log();
 
-int InitLog(const std::string &strLogName, const uint32_t dwLogLevel = 15);
+    public:
+        void InitLog(const uint32_t dwLogLevel = 15);
 
-void ExtLogInfo(const std::string &strFileName,
-        const std::string &strFunction,
-        const uint32_t dwLineNo,
-        const char * strFormat,
-        ...);
+        void InitLog(const std::string &strLogName,
+            const uint32_t dwLogLevel = 15);
 
-void LogInfo(const char * strFormat, ...);
+        void MarkDebugLog(const std::string &strLogContent);
 
-extern LogBase m_objLogBase;
+        void MarkErrorLog(const std::string &strLogContent);
+
+        void MarkKeyLog(const std::string &strLogContent);
+
+    private:
+        void InitLogBase();
+
+        void InitDebugLog();
+
+        void InitErrorLog();
+
+        void InitKeyLog();
+
+    private:
+        uint32_t m_dwLogLevel;
+
+        std::string m_strLogName;
+
+        LogBase m_oLogDebug;
+        LogBase m_oLogError;
+        LogBase m_oLogKey;
+};
 }
 
 #endif
