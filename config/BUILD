@@ -1,0 +1,14 @@
+cc_library(
+    name='config_utils',
+    srcs=[
+        'config.cpp',
+    ],
+    deps=[
+        '//base/comm/file:file_utils',
+        '//base/comm/string:string_utils',
+    ],
+    incs=[
+        '/home/lancelot/code/base/comm/file',
+        '/home/lancelot/code/base/comm/string',
+    ],
+)
