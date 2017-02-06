@@ -30,6 +30,10 @@ class StringUtils
                 const std::string &strSubStr,
                 std::vector<std::string> &vecSplitResult);
 
+        //删除字符串前后指定字符，默认空格
+        static const std::string Strip(const std::string &strContext,
+                const char cStripChar = ' ');
+
     private:
         
 };

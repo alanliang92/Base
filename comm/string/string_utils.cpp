@@ -91,3 +91,34 @@ void StringUtils::SplitBySubStr(const std::string &strContext,
         }
     }
 }
+
+const std::string StringUtils::Strip(const std::string &strContext,
+        const char cStripChar)
+{
+    std::string strResult = strContext;
+    
+    size_t dwHeadBeg = strResult.find_first_of(cStripChar);
+    size_t dwHeadEnd = strResult.find_first_not_of(cStripChar);
+
+    if(dwHeadBeg == 0)
+    {
+        strResult = strResult.erase(dwHeadBeg, dwHeadEnd);
+    }
+    else
+    {
+        strResult = strContext;
+    }
+
+    if(!strResult.empty())
+    {
+        size_t dwTailBeg = strResult.find_last_not_of(cStripChar);
+        size_t dwTailEnd = strResult.find_last_of(cStripChar);
+
+        if(dwTailEnd == strResult.size()-1)
+        {
+            strResult = strResult.erase(dwTailBeg+1, strResult.size());
+        }
+    }
+
+    return strResult;
+}

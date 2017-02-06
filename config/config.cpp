@@ -29,10 +29,13 @@ void Config::InitConfigContent()
     File oFile(m_strConfigFileName);
 
     std::string strLineContent = "";
+    std::string strTmp = "";
     std::string strParentItem = "";
 
-    while((strLineContent = oFile.GetLine()) != "")
+    while((strTmp = oFile.GetLine()) != "")
     {
+        strLineContent = StringUtils::Strip(strTmp);
+
         if(strLineContent.find("[") != std::string::npos 
            && strLineContent.find("]") != std::string::npos)
         {
@@ -56,6 +59,9 @@ void Config::InitConfigContent()
         {
             continue;
         }
+
+        vecChiledItem[0] = StringUtils::Strip(vecChiledItem[0]);
+        vecChiledItem[1] = StringUtils::Strip(vecChiledItem[1]);
 
         m_mapConfig[strParentItem][vecChiledItem[0]] = vecChiledItem[1];
     }
