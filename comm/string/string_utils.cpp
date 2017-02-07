@@ -28,7 +28,7 @@ void StringUtils::SplitBySeparator(const std::string &strContext,
             std::string strItem = strTmp.substr(0, dwSeparatorIndex);
             if(!strItem.empty())
             {
-                vecSplitResult.push_back(strItem);
+                vecSplitResult.push_back(Strip(strItem));
             }
             if(dwSeparatorIndex + 1 < strTmp.size())
             {
@@ -41,7 +41,7 @@ void StringUtils::SplitBySeparator(const std::string &strContext,
         }
         else
         {
-            vecSplitResult.push_back(strTmp);
+            vecSplitResult.push_back(Strip(strTmp));
         }
     }
 
@@ -73,7 +73,7 @@ void StringUtils::SplitBySubStr(const std::string &strContext,
 
             if(!strItem.empty())
             {
-                vecSplitResult.push_back(strItem);
+                vecSplitResult.push_back(Strip(strItem));
             }
 
             if(dwSeparatorIndex + dwSubStrSize < strTmp.size())
@@ -87,7 +87,7 @@ void StringUtils::SplitBySubStr(const std::string &strContext,
         }
         else
         {
-            vecSplitResult.push_back(strTmp);
+            vecSplitResult.push_back(Strip(strTmp));
         }
     }
 }

@@ -38,8 +38,6 @@ class LogBase
         int WriteLog(const std::string &strLog);
 
     private:
-
-    private:
         std::string m_strLogName;
         uint32_t m_dwLogLevel;
         int m_iLogFd;

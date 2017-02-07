@@ -60,9 +60,6 @@ void Config::InitConfigContent()
             continue;
         }
 
-        vecChiledItem[0] = StringUtils::Strip(vecChiledItem[0]);
-        vecChiledItem[1] = StringUtils::Strip(vecChiledItem[1]);
-
         m_mapConfig[strParentItem][vecChiledItem[0]] = vecChiledItem[1];
     }
 }
