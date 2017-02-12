@@ -18,10 +18,76 @@ Config::~Config()
 
 }
 
-const std::string Config::GetItemContent(const std::string &strParentItem,
-        const std::string &strChildItem)
+bool Config::GetItemContent(const std::string &strParentItem,
+        const std::string &strChildItem, 
+        std::string &strValue)
 {
-    return m_mapConfig[strParentItem][strChildItem];
+    strValue = m_mapConfig[strParentItem][strChildItem];
+
+    if(!strValue.empty())
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+bool Config::GetItemContent(const std::string &strParentItem,
+        const std::string &strChildItem,
+        std::string &strValue,
+        const std::string &strDefaultValue)
+{
+    std::string tmpValue = "";
+    bool bGetItem = false;
+
+    bGetItem = GetItemContent(strParentItem, strChildItem, tmpValue);
+    if(!bGetItem)
+    {
+        strValue = strDefaultValue;
+    }
+    else
+    {
+        strValue = tmpValue;
+    }
+
+    return true;
+}
+
+bool Config::GetItemContent(const std::string &strParentItem,
+        const std::string &strChildItem,
+        uint32_t &dwValue)
+{
+    std::string tmpValue = "";
+    bool bGetItem = false;
+
+    bGetItem = GetItemContent(strParentItem, strChildItem, tmpValue);
+    if(!bGetItem)
+    {
+        return false;
+    }
+
+    dwValue = atoi(tmpValue.c_str());
+    return true;
+}
+
+bool Config::GetItemContent(const std::string &strParentItem,
+        const std::string &strChildItem,
+        uint32_t &dwValue,
+        const std::string &strDefaultValue)
+{
+    std::string tmpValue = "";
+    bool bGetItem = false;
+
+    bGetItem = GetItemContent(strParentItem, strChildItem, tmpValue);
+    if(!bGetItem)
+    {
+        dwValue = atoi(strDefaultValue.c_str());
+    }
+    else{
+        dwValue = atoi(tmpValue.c_str());
+    }
+
+    return true;
 }
 
 void Config::InitConfigContent()

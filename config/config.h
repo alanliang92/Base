@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <stdlib.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -23,8 +24,23 @@ class Config
 
         ~Config();
 
-        const std::string GetItemContent(const std::string &strParentItem,
-                const std::string &strChildItem);
+        bool GetItemContent(const std::string &strParentItem,
+                const std::string &strChildItem,
+                std::string &strValue);
+
+        bool GetItemContent(const std::string &strParentItem,
+                const std::string &strChildItem,
+                std::string &strValue,
+                const std::string &strDefaultValue);
+
+        bool GetItemContent(const std::string &strParentItem,
+                const std::string &strChildItem,
+                uint32_t &dwValue);
+
+        bool GetItemContent(const std::string &strParentItem,
+                const std::string &strChildItem,
+                uint32_t &dwValue,
+                const std::string &strDefaultValue);
 
     private:
         Config();

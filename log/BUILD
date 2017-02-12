@@ -6,9 +6,9 @@ cc_library(
         'log_interface.cpp',
     ],
     deps=[
-        '//base/comm/string:string_utils',
+        '//Base/comm/string:string_utils',
     ],
     incs=[
-        '/home/lancelot/code/base/comm/string',
+        '/home/lancelot/code/Base/comm/string',
     ],
 )

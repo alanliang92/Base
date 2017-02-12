@@ -68,7 +68,8 @@ const std::string File::GetLine()
 
         //printf("Read result:%s\n", strAppendContent.c_str());
 
-        if(!strAppendContent.empty())
+        if(!strAppendContent.empty() && 
+           strAppendContent != "\0")
         {
             m_strCurrContent += strAppendContent;
         }
@@ -76,6 +77,11 @@ const std::string File::GetLine()
         free(content);
 
         //printf("After read current content:%s\n", m_strCurrContent.c_str());
+
+        if(dwReadSize <= 0)
+        {
+            break;
+        }
     }
 
     return DealLine();

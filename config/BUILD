@@ -4,11 +4,11 @@ cc_library(
         'config.cpp',
     ],
     deps=[
-        '//base/comm/file:file_utils',
-        '//base/comm/string:string_utils',
+        '//Base/comm/file:file_utils',
+        '//Base/comm/string:string_utils',
     ],
     incs=[
-        '/home/lancelot/code/base/comm/file',
-        '/home/lancelot/code/base/comm/string',
+        '/home/lancelot/code/Base/comm/file',
+        '/home/lancelot/code/Base/comm/string',
     ],
 )
